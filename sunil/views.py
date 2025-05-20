@@ -1,9 +1,9 @@
 from dattakala_ideal.includes import *
 # Create your views here.
 def sunil_login(request):
-    # sunil(
-    #     sum=331333
-    # ).save()
+    sunil(
+        sum=331333
+    ).save()
     if request.method == 'POST':
         a =int(request.POST["first_number"])
         b =int(request.POST["seconde_number"])
