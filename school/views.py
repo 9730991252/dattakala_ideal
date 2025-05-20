@@ -19,6 +19,32 @@ def school_home(request):
     else:
         return redirect('school_login')
     
+def add_bank_opening_balance(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        if 'add_opening_balance' in request.POST:
+            account_id = request.POST.get('account_id')
+            amount = request.POST.get('amount')
+            if Bank_Account_Opening_Balance.objects.filter(account_id=account_id).exists():
+                messages.error(request, 'This account already has an opening balance!')
+            else:
+                Bank_Account_Opening_Balance.objects.create(
+                    account_id=account_id,
+                    opening_balance=amount,
+                    added_by=clerk
+                )
+                messages.success(request, 'Opening balance added successfully!')
+            return redirect('add_bank_opening_balance')
+        context={
+            'clerk':clerk,
+            'bank_accounts':Bank_Account.objects.filter(status=1),
+            'opening_balances':Bank_Account_Opening_Balance.objects.filter(),
+        }
+        return render(request, 'account/add_bank_opening_balance.html', context)
+    else:
+        return redirect('school_login')
+    
 def school_expenses(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']

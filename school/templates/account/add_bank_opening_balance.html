@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<style>
+  .modal {
+    margin-top: 50px;
+  }
+  table { 
+    width: 80%; 
+    border-collapse: collapse; 
+    margin: 30px auto;
+  }
+  tr:nth-of-type(odd) { 
+    background: #eee; 
+  }
+  th { 
+    background: #3498db; 
+    color: white; 
+    font-weight: bold; 
+  }
+  td, th { 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    text-align: left; 
+    font-size: 18px;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+
+<div class="container mt-4">
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBalanceModal">
+    Add Bank Account Opening Balance
+  </button>
+
+  <!-- Add Opening Balance Modal -->
+  <div class="modal fade" id="addBalanceModal" tabindex="-1" aria-labelledby="addBalanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="addBalanceModalLabel">Add Opening Balance</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="account_id" class="form-label">Select Bank Account</label>
+              <select name="account_id" id="account_id" class="form-select" required>
+                <option value="" disabled selected>-- Choose Account --</option>
+                {% for acc in bank_accounts %}
+                  <option value="{{ acc.id }}">{{ acc.bank_name }} ({{ acc.account_number }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="amount" class="form-label">Opening Balance Amount</label>
+              <input type="number" step="0.01" min="0" name="amount" id="amount" class="form-control" placeholder="Enter amount" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" name="add_opening_balance" class="btn btn-success">Add Balance</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Opening Balance Table -->
+  <h3 class="text-center mt-5">Existing Opening Balances</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Bank Name</th>
+        <th>Account Number</th>
+        <th>Amount</th>
+        <th>Added By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for balance in opening_balances %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ balance.account.bank_name }}</td>
+          <td>{{ balance.account.account_number }}</td>
+          <td>{{ balance.opening_balance }}</td>
+          <td>{{ balance.added_by.name }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No opening balances found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}

@@ -125,6 +125,12 @@ class Bank_Account(models.Model):
     bank_name = models.CharField(max_length=100, null=True)
     status = models.IntegerField(default=1)
     
+class Bank_Account_Opening_Balance(models.Model):
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True)
+    account = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, null=True)
+    opening_balance = models.IntegerField(default=0)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    
 class Clerk_used_count(models.Model):
     clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
     used_count = models.IntegerField(default=0)
