@@ -8,7 +8,6 @@ def save_admin_used_count():
         obj.save()
         
 def admin_home(request):
-    Student_received_Fee_Cash.objects.all().delete()
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
         a = Admin_detail.objects.filter(mobile=mobile).first()
