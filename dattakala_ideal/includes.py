@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models import *
 from sunil.models import *
-# # from teacher.models import *
+from teacher.models import *
 from school.models import *
 from school_admin.models import *
 from home.views import *

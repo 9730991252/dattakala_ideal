@@ -254,4 +254,154 @@
         </tbody>
       </table>
     </div>
+
+<style>
+    .flex {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .modal {
+        margin-top: 100px;
+    }
+</style>
+
+<br>
+<!-- Add Admin Button -->
+<div class="flex">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_admin">
+        Add Admin
+    </button>
+</div>
+
+<!-- Add Admin Modal -->
+<div class="modal fade" id="add_admin" tabindex="-1" aria-labelledby="addAdminModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addAdminModalLabel">Add Admin</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <select class="form-control" name="batch_id" required>
+              <option value="">Select Batch</option>
+              {% for b in batches %}
+                {% if b.status == 1 %}
+                  <option value="{{ b.id }}">{{ b.name }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="">Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Enter Admin Name" required>
+          </div>
+          <div class="mb-3">
+            <label for="">Mobile</label>
+            <input type="text" class="form-control" name="mobile" placeholder="Enter Mobile Number" required>
+          </div>
+          <div class="mb-3">
+            <label for="">Secret Pin</label>
+            <input type="password" class="form-control" name="secret_pin" placeholder="Enter Secret Pin" required>
+          </div>
+          <button type="submit" name="Add_Admin" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admins Table -->
+<div class="container mt-4">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Mobile</th>
+        <th scope="col">Pin</th>
+        <th scope="col">Batch</th>
+        <th scope="col">Status</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in admins %}
+      <tr>
+        <th scope="row">{{ a.name }}</th>
+        <td>{{ a.mobile }}</td>
+        <td>{{ a.pin }}</td>
+        <td>{{ a.batch.name }}</td>
+        <td>
+          <form method="POST">
+            {% csrf_token %}
+            {% if a.status == 1 %}
+              <button class="btn btn-success" type="submit" name="admin_active">Active
+                <input type="hidden" name="id" value="{{ a.id }}">
+              </button>
+            {% else %}
+              <button class="btn btn-danger" type="submit" name="admin_deactive">Deactive
+                <input type="hidden" name="id" value="{{ a.id }}">
+              </button>
+            {% endif %}
+          </form>
+        </td>
+        <td>
+          <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#edit_admin{{ a.id }}">
+            Edit
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit Admin Modal -->
+      <div class="modal fade" id="edit_admin{{ a.id }}" tabindex="-1" aria-labelledby="editAdminModalLabel{{ a.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="editAdminModalLabel{{ a.id }}">Edit Admin</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ a.id }}">
+                <div class="mb-3">
+                  <select class="form-control" name="batch_id" required>
+                    <option value="">Select Batch</option>
+                    {% for b in batches %}
+                      <option value="{{ b.id }}" {% if b.id == a.batch.id %}selected{% endif %}>{{ b.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="">Name</label>
+                  <input type="text" class="form-control" name="name" value="{{ a.name }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="">Mobile</label>
+                  <input type="text" class="form-control" name="mobile" value="{{ a.mobile }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="">Secret Pin</label>
+                  <input type="password" class="form-control" name="secret_pin" value="{{ a.pin }}" placeholder="Enter New Secret Pin">
+                </div>
+                <button type="submit" name="edit_admin" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock content %}

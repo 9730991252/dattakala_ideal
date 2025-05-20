@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models import *
 from school.models import *
+from school_admin.models import *
 from django.contrib import messages
 from datetime import date
 from django.db.models import *
@@ -28,12 +29,12 @@ def check_new_visitor(request):
         )
     return web_visitor.objects.all().first().count
 
-# def check_avalable_cash(request, batch):
-#     avalable_cash = Student_received_Fee_Cash.objects.filter(added_by__batch=batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-#     avalable_cash -= Cash_Transfer_To_Bank.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
-#     avalable_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
-#     avalable_cash -= Expenses.objects.filter(batch=batch, type='cash').aggregate(Sum('amount'))['amount__sum'] or 0
-#     return avalable_cash
+def check_avalable_cash(request, batch):
+    avalable_cash = Student_received_Fee_Cash.objects.filter(added_by__batch=batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+    avalable_cash -= Cash_Transfer_To_Bank.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
+    avalable_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
+    avalable_cash -= Expenses.objects.filter(batch=batch, type='cash').aggregate(Sum('amount'))['amount__sum'] or 0
+    return avalable_cash
 
 
 def index(request):
@@ -74,27 +75,27 @@ def school_login(request):
     }
     return render(request, 'school_login.html', context)
 
+
 def admin_login(request):
     if request.session.has_key('admin_mobile'):
-         return redirect('admin_home')
+        return redirect('admin_home')
     if request.method == "POST":
         batch_id=request.POST ['batch_id']
         number=request.POST ['mobile']
         pin=request.POST ['pin']
-        # a = Admin_login.objects.filter(mobile=number, pin=pin).first()
-        # if a:
-        #     a.batch_id=batch_id
-        #     a.save()
-        #     request.session['admin_mobile'] = request.POST["mobile"]
-        #     return redirect('admin_home')
-        # else:
-        #     messages.error(request,f"Mobile Number or Secret Pin invalid.")
-        #     return redirect('/admin_login/')
+        c= Admin_detail.objects.filter(batch_id=batch_id,mobile=number,pin=pin,status=1)
+        if c:
+            request.session['admin_mobile'] = request.POST["mobile"]
+            return redirect('admin_home')
+        else:
+            messages.error(request,f"Mobile Number or Secret Pin invalid.")
+            return redirect('/admin_login/')
     context = {
-        # 'batch':Batch.objects.all(),
-        
+        'batch':Batch.objects.all(),
     }
     return render(request, 'admin_login.html',context)
+
+
 
 def parent_login(request):
     # batch = Batch.objects.filter(status=1, start_date__lte=date.today()).first()  

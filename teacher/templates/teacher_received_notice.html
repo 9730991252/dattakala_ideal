@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    body {
+        background: #f2f4f7;
+        font-family: 'Poppins', sans-serif;
+    }
+    .notice-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 15px;
+    }
+    .notice-card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .notice-card.unread {
+        background-color: rgb(253, 201, 201);
+    }
+    .notice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    .notice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    .notice-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+    }
+    .notice-number {
+        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+    }
+    .notice-meta {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+    .notice-meta strong {
+        color: #444;
+    }
+    .notice-body {
+        margin-top: 15px;
+        font-size: 16px;
+        color: #555;
+        line-height: 1.6;
+        text-align: justify;
+    }
+    .read-more-btn, .read-less-btn {
+        background: #0083b0;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        margin-top: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+    }
+    .read-more-btn:hover, .read-less-btn:hover {
+        background: #005f73;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+{% include 'teacher_notice_menu.html' %}
+
+
+<div class="notice-container">
+    <h3 style="color: #333;">Notices</h3>
+    {% if all_notices %}
+        {% for n in all_notices %}
+        <div id="mainnotice-{{n.id}}">
+        <div class="notice-card {% if not n.readed_date %} unread {% endif %}" id="notice-{{n.id}}">
+            <div class="notice-number">Notice {{ n.notice_number }}</div>
+            <div class="notice-header">
+                <div class="notice-title">{{ n.title|slice:":30" }}{% if n.title|length > 35 %}...{% endif %}</div>
+            </div>
+            <div class="notice-meta">
+                <strong>Sender:</strong> 
+                {% if n.by_teacher %}{{ n.by_teacher.name }}
+                {% elif n.by_clerk %}{{ n.by_clerk.name }}
+                {% elif n.by_admin == 1 %}Admin
+                {% else %}Unknown{% endif %}
+                <br>
+                <strong>Added On:</strong> {{ n.added_date|date:"d M, Y h:i A" }}
+            </div>
+            <div class="notice-body">
+                <span id="short-desc-{{ n.id }}">{{ n.description|slice:":10" }}...</span>
+                <span id="full-desc-{{ n.id }}" style="display: none;">{{ n.description }}</span>
+                <br>
+                <button class="read-more-btn" id="read-more-btn{{n.id}}" onclick="showFullDescription('{{ n.id }}', '{{ n.id }}')">Read More</button>
+                <button class="read-less-btn" id="read-less-btn{{n.id}}" style="display: none;" onclick="showLessDescription('{{ n.id }}')">Read Less</button>
+            </div>
+            {% if n.readed_date %}
+            <div class="notice-meta">
+                <strong>Read At:</strong> {{ n.readed_date.readed_date|date:"d M, Y h:i A" }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #999;">No Notices</p>
+    {% endif %}
+</div>
+
+{% include 'home/index_footer.html' %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+function showFullDescription(id, noticeId) {
+    $('#full-desc-' + id).show();
+    $('#short-desc-' + id).hide();  // Corrected the method to hide the short description
+
+    saveReadedNotice(noticeId);
+}
+
+function showLessDescription(id) {
+    $('#full-desc-' + id).hide();
+    $('#read-more-btn' + id).show();
+    $('#read-less-btn' + id).hide();
+}
+
+function saveReadedNotice(noticeId) {
+
+    $.ajax({
+        url: "{% url 'save_readed_notices_teacher' %}",
+        method: "GET",
+        data: {
+            notice_id: noticeId,
+            teacher_id: "{{ teacher.id }}",
+        },
+        success: function(response) {
+            document.getElementById('mainnotice-'+noticeId).innerHTML = response.t;
+            $('#read-more-btn' + noticeId).hide();
+            $('#read-less-btn' + noticeId).show();
+        },
+        error: function() {
+            alert('Error marking notice as read.');
+        }
+    });
+}
+</script>
+{% endblock content %}
+

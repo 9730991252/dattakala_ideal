@@ -91,9 +91,53 @@ def sunil_home(request):
             clerk.status = 1
             clerk.save()
             return redirect('sunil_home')
+        
+        if 'Add_Admin' in request.POST:
+            batch_id = request.POST.get('batch_id')
+            mobile = request.POST.get('mobile')
+            
+            if Admin_detail.objects.filter(batch_id=batch_id,mobile=mobile).exists():
+                return redirect('sunil_home')
+            else:
+                Admin_detail(
+                    batch_id=batch_id,
+                    name=request.POST.get('name'),
+                    mobile=mobile,
+                    pin=request.POST.get('secret_pin')
+                ).save()
+            return redirect('sunil_home')
+        if 'edit_admin' in request.POST:
+            admin_id = request.POST.get('id')
+            mobile = request.POST.get('mobile')
+            batch_id = request.POST.get('batch_id')
+
+            if Admin_detail.objects.filter(mobile=mobile, batch_id=batch_id).exists():
+                existing_admin = Admin_detail.objects.get(mobile=mobile, batch_id=batch_id)
+                if existing_admin.id != int(admin_id):
+                    return redirect('sunil_home')
+            admin = Admin_detail.objects.get(id=admin_id)
+            admin.name = request.POST.get('name')
+            admin.mobile = mobile
+            admin.pin = request.POST.get('secret_pin')
+            admin.batch_id = batch_id
+            admin.save()
+            return redirect('sunil_home')
+        if 'admin_active' in request.POST:
+            admin_id = request.POST.get('id')
+            admin = Admin_detail.objects.get(id=admin_id)
+            admin.status = 0
+            admin.save()
+            return redirect('sunil_home')
+        if 'admin_deactive' in request.POST:
+            admin_id = request.POST.get('id')
+            admin = Admin_detail.objects.get(id=admin_id)
+            admin.status = 1
+            admin.save()
+            return redirect('sunil_home')
         context = {
             'batches': Batch.objects.all().order_by('name'),
             'clerks': Clerk.objects.all().order_by('name'),
+            'admins': Admin_detail.objects.all().order_by('name'),
         }
         return render(request, 'sunil_home.html', context)
     else:
