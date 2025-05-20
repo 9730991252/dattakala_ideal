@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'admin_navbar.html' %}
+{% include 'alert.html' %}
+
+<br>
+{% include 'school_details_card.html' %}
+
+<style>
+    body {
+        background: #f2f6fc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .top-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0 20px;
+    }
+
+    .top-nav-buttons a {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+    }
+
+    .top-nav-buttons a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card_main_box2 {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .detail_cards2 {
+        background: white;
+        border: none;
+        width: 160px;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .detail_cards2:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .detail_cards2 i {
+        font-size: 28px;
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #333;
+    }
+
+    .detail_cards2 p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    .detail_cards2 b {
+        font-size: 24px;
+        color: #007bff;
+    }
+</style>
+
+<!-- Dashboard Cards -->
+<div class="card_main_box2">
+    <div class="detail_cards2">
+        <i class="fas fa-sign-in-alt"></i>
+        <p>Today's Check In</p>
+        <b>{{check_in}}</b>
+    </div>
+    <div class="detail_cards2">
+        <i class="fas fa-sign-out-alt"></i>
+        <p>Today's Check Out</p>
+        <b>{{check_out}}</b>
+    </div>
+</div>
+
+
+<style>
+    .cash-widget {
+        max-width: 260px;
+        margin: 24px auto;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #e6fffa, #f0fff4);
+        border: 1px solid #b2f5ea;
+        border-left: 6px solid #38a169;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        color: #2f855a;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: center;
+    }
+
+    .cash-widget:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .cash-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #276749;
+        margin-bottom: 4px;
+    }
+
+    .cash-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #22543d;
+    }
+</style>
+
+<div class="cash-widget">
+    <div class="cash-label">Clerk Available Cash</div>
+    <div class="cash-amount">Rs.{{ avalable_cash }}</div>
+</div>
+
+
+
+{% endblock content %}

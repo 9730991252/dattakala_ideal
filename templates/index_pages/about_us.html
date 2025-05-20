@@ -1,0 +1,58 @@
+{% load static %}
+<style>
+    .About_us_container{
+        width: 90%;
+        margin: 0 auto;
+        height: 50vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+        padding: 10px;
+        border-radius: 10px;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+    .about_img_box{
+        width: 30%;
+        height: 100%;
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    .about_containt_box{
+        width: 60%;
+    }
+    @media screen and (max-width: 500px) {
+        .about_us{
+            height: 200vh;
+        }
+        .About_us_container{
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 180vh;
+        }
+        .about_img_box{
+            width: 95%;
+            margin: 0 auto;
+        }
+        .about_containt_box{
+            width: 100%;
+            margin: 0 auto;
+        }   
+    }
+</style>
+<div class="About_us_container">
+    <div class="about_img_box">
+        <img src="{% static 'img/school_image.jpg' %}" alt="">
+    </div>
+    <div class="about_containt_box">
+        <p>Dattakala Shikshan Sanstha is situated on a picturesque hill top with a panoramic view of the Sahyadri Ranges. The students have a pollution free environment where they can breathe fresh air & play on spacious play fields. The entire enchanting atmosphere is conducive to the overall development of the student. As an Educational Institute DKSS aims to develop three dimensional personality in our students 1) Pursuit of Knowledge 2) Commitment to Professionalism 3) Inculcation of Values. To achieve this Dattakala Shikshan Sanstha will ensure the highest quality of faculty who are not only highly qualified and trained but also work with a missionary zeal of shaping the student's personality. Dattakala is providing K.G. to P.G. in Pharmacy, Engineering, Management, School and Jr. College education. With a lots of Best Wishes...
+
+We aspire to exemplify the following core values. We at DKSS, motivated by honesty, work hard to shape young professionals who are competent in knowledge and skills and are infused with values so that they can be better persons and best professionals in the future.
+
+Students encounter significant obstacles and competitiveness in the professional field in today's fast-paced and modernizing society. Through great academics, athletics, co-curricular and extra-curricular activities, we have always endeavored to develop and mould the raw abilities of our students to a fine level. Imbibing the human component in today's cutthroat competitive environment has become a requirement, which can be accomplished through education. The college magazine is a medium for students to uncover their hidden abilities.</p>
+    </div>
+</div>
