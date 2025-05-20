@@ -146,7 +146,7 @@
     }
 
     /* CSS Spinner Loader */
-    #form-loader, #form-loader_cash, #form-loader_bank {
+    #form-loader, #form-loader_cash, #form-loader_bank, #form-loader_fee {
         display: none;
         text-align: center;
         padding: 20px;
@@ -220,6 +220,73 @@
         <div class="info_title">Added By</div>
         <div class="info_value">{{ student.added_by.name }}</div>
     </div>
+    <div class="info_item">
+        <div class="info_title">Fee</div>
+        <div class="info_value">
+            {% if total_fee %}
+                ₹.{{ total_fee.amount }}
+            {% else %}
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add-fee-modal">Add student Fee</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="student_container" style="font-weight:700;">
+    <div class="info_item">
+        <div class="info_title ">Total Fee</div>
+        <div class="info_value text-success">₹.{{ total_fee.amount }}</div>
+    </div>
+
+    <div class="info_item">
+        <div class="info_title">Paid Fee</div>
+        <div class="info_value text-success">₹.{{ paid_fee }}</div>
+    </div>
+
+    <div class="info_item">
+        <div class="info_title">Remaining Fee</div>
+        <div class="info_value text-danger">₹.{{ remaining_fee }}</div>
+    </div>
+</div>
+
+<!-- Modal for Adding Fee -->
+<div class="modal fade" id="add-fee-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title">Add Fee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="custom_form" id="fee-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" required name="amount" step="any">
+                    </div>
+             
+                </div>
+                <div class="modal-footer custom-modal-footer">
+                    <button type="submit" class="submit-btn" id="save_total_fee" name="save_total_fee">Add Cash</button>
+                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+            <!-- CSS Loader -->
+            <div id="form-loader_fee">
+                <div class="spinner"></div>
+                <p>Saving fee, please wait...</p>
+            </div>
+            <script>
+                const feeform = document.getElementById('fee-form');
+                const feeloader = document.getElementById('form-loader_fee');
+                const feeloader_btn = document.getElementById('save_cash_fee');
+            
+                feeform.addEventListener('submit', function () {
+                    feeloader.style.display = 'block';
+                    feeloader_btn.style.display = 'none';
+                });
+            </script>
+        </div>
+    </div>
 </div>
 
 
@@ -288,7 +355,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
             
                 cashform.addEventListener('submit', function () {
                     cashloader.style.display = 'block';
-                    cashloader_btn.style.display = 'nonw';
+                    cashloader_btn.style.display = 'none';
                 });
             </script>
         </div>

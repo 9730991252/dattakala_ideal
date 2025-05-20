@@ -15,4 +15,5 @@ urlpatterns = [
     path('admin_account/',              views.admin_account,            name='admin_account'),
     path('credit/',                     views.credit,                   name='credit'),
     path('debit/',                      views.debit,                    name='debit'),
+    path('admin_student_approval/',     views.admin_student_approval,   name='admin_student_approval'),
 ]

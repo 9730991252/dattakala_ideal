@@ -212,6 +212,16 @@ def student_fee_detail(request, id):
         bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=clerk.batch)
         paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
 
+        if 'save_total_fee' in request.POST:
+            total_fee = request.POST.get('amount')
+            student_fee.objects.create(
+                batch=clerk.batch,
+                student=student,
+                added_by=clerk,
+                amount=total_fee,
+            )
+            messages.success(request, 'Total Fee Saved successfully')
+            return redirect('student_fee_detail', id=id)
 
         # Save cash fee logic
         if 'save_cash_fee' in request.POST:
@@ -244,7 +254,11 @@ def student_fee_detail(request, id):
             )
             messages.success(request, 'Bank Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
-
+        total_fee = student_fee.objects.filter(student=student, batch=clerk.batch).first()
+        if total_fee:
+            total_fee = total_fee.amount
+        else:
+            total_fee = 0
         context = {
             'clerk': clerk,
             'student': student,
@@ -254,7 +268,9 @@ def student_fee_detail(request, id):
             'cash_fee':cash_fee,
             'bank_fee':bank_fee,
             'paid_fee':paid_fee,
-            'accounts':Bank_Account.objects.filter(status=1)
+            'remaining_fee':int(total_fee)-int(paid_fee),
+            'accounts':Bank_Account.objects.filter(status=1),
+            'total_fee': student_fee.objects.filter(student=student, batch=clerk.batch).first(),
         }
         return render(request, 'account/student_fee_detail.html', context)
     else:

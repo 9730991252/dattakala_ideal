@@ -1,6 +1,9 @@
 from django.db import models
 from PIL import Image
 # Create your models here.
+
+
+
 class Batch(models.Model):
     name = models.CharField(max_length=100, unique=True)
     start_date = models.DateField()
@@ -50,6 +53,7 @@ class Student(models.Model):
     edit_status = models.IntegerField(default=1)
     tocken = models.CharField(max_length=1000, null=True, blank=True)
     date_of_birth = models.DateField(null=True)
+
 
 class Student_Image(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -126,14 +130,6 @@ class Clerk_used_count(models.Model):
     used_count = models.IntegerField(default=0)
 
     
-class Student_received_Fee_Cash(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    received_amount = models.FloatField(default=0)
-    paid_date = models.DateField(null=True)
-    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_received_fee')
-    added_date = models.DateTimeField(auto_now_add=True, null=True)
-    updated_date = models.DateTimeField(auto_now=True, null=True)
-    updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_student_received_fee')
 
 class Student_recived_Fee_Bank(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -185,3 +181,30 @@ class Expenses(models.Model):
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)
 
+class Admin_detail(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True, related_name='batch')
+    name = models.CharField(max_length=100, null=True)
+    mobile = models.IntegerField(null=True)
+    pin =models.CharField(max_length=10, null=True)
+    status = models.IntegerField(default=1, null=True)
+    
+class student_fee(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    amount = models.FloatField(default=0)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_fee')
+    veryfy_date = models.DateTimeField(null=True, blank=True)
+    veryfy_by = models.ForeignKey(Admin_detail, on_delete=models.CASCADE, null=True, related_name='veryfy_by_student_fee')
+     
+    
+class Student_received_Fee_Cash(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    received_amount = models.FloatField(default=0)
+    paid_date = models.DateField(null=True)
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_received_fee')
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+    updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_student_received_fee')
+    veryfy_date = models.DateTimeField(null=True, blank=True)
+    veryfy_by = models.ForeignKey(Admin_detail, on_delete=models.CASCADE, null=True, related_name='veryfy_by_student_received_fee')
