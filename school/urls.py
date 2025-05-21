@@ -30,5 +30,6 @@ urlpatterns = [
     path('student_fees/', views.student_fees, name='student_fees'),
     path('student_fee_detail/<id>', views.student_fee_detail, name='student_fee_detail'),
     path('school_cash_transfer/', views.school_cash_transfer, name='school_cash_transfer'),
+    path('school_account_category/', views.school_account_category, name='school_account_category'),
     path('school_expenses/', views.school_expenses, name='school_expenses'),
 ]

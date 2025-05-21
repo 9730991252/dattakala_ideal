@@ -208,6 +208,18 @@ def admin_view_students(request):
         for i in Student.objects.all().order_by('name'):
              
             school_class = Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first()
+            
+            total_fee = student_fee.objects.filter(student_id=i.id, batch=a.batch).first()
+            if total_fee:
+                total_fee = total_fee.amount
+            else:
+                total_fee = 0
+            
+            total_fee_paid = Student_received_Fee_Cash.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+            total_fee_paid += Student_recived_Fee_Bank.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            
+            reamining_fee = total_fee - total_fee_paid or 0
+            
             s.append({
                 'id':i.id,
                 'name':i.name,
@@ -216,8 +228,11 @@ def admin_view_students(request):
                 'gender':i.gender,
                 'img':Student_Image.objects.filter(student_id=i.id).first(),
                 'class_name':school_class.school_class.name if school_class else 'Not Selected',
+                'total_fee':total_fee,
+                'total_fee_paid':total_fee_paid,
+                'reamining_fee':reamining_fee,
             })
-        s = sorted(s, key=lambda k: k['class_name'], reverse=False)
+        s = sorted(s, key=lambda k: k['reamining_fee'], reverse=False)
         context={
             'students':s,
             'total_students':Student.objects.all().count(),

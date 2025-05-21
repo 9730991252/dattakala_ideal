@@ -73,10 +73,11 @@
     </div>
 
     <div class="name_mobile_box">
-        <div class="name">{{s.name}}</div>
+        <div class="name" style="text-transform: capitalize;">{{s.name}}</div>
         <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
         <div class="adhar_number">Class. {{s.class_name}}</div>
     </div>
+    
 </div>
 <br>
 {% endfor %}

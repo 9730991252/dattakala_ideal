@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<style>
+  .modal {
+    margin-top: 50px;
+  }
+  table { 
+    width: 70%; 
+    border-collapse: collapse; 
+    margin:50px auto;
+  }
+  tr:nth-of-type(odd) { 
+    background: #eee; 
+  }
+  th { 
+    background: #3498db; 
+    color: white; 
+    font-weight: bold; 
+  }
+  td, th { 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    text-align: left; 
+    font-size: 18px;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+<br>
+
+<div class="container">
+
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddCategoryModal">
+    Add Category
+  </button>
+
+  <!-- Add Category Modal -->
+  <div class="modal fade" id="AddCategoryModal" tabindex="-1" aria-labelledby="AddCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="AddCategoryModalLabel">Add Category</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="category_name">Category Name</label>
+              <input type="text" name="name" id="category_name" class="form-control" placeholder="Enter Category Name" required>
+            </div>
+            <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+            <button type="submit" name="add_category" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">
+              Add Category
+            </button>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Category Name</th>
+        <th>Added By</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in category %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ t.category_name }}</td>
+        <td>{{ t.added_by.name }}</td>
+        <td style="display: flex; gap: 5px;">
+          <!-- Edit Button -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditCategoryModal{{t.id}}">
+            Edit
+          </button>
+
+          <!-- Status Toggle -->
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ t.id }}">
+            {% if t.status == 1 %}
+            <button type="submit" name="change_status" class="btn btn-success">Active</button>
+            {% else %}
+            <button type="submit" name="change_status" class="btn btn-danger">Deactive</button>
+            {% endif %}
+          </form>
+        </td>
+      </tr>
+
+      <!-- Edit Category Modal -->
+      <div class="modal fade" id="EditCategoryModal{{t.id}}" tabindex="-1" aria-labelledby="EditCategoryModalLabel{{t.id}}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="EditCategoryModalLabel{{t.id}}">Edit Category</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="id" value="{{ t.id }}">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="edit_category_name{{t.id}}">Category Name</label>
+                  <input type="text" name="name" value="{{ t.category_name }}" id="edit_category_name{{t.id}}" class="form-control" required>
+                </div>
+                <div class="spinner-border" role="status" style="display: none;" id="spinner{{t.id}}"></div>
+                <button type="submit" name="edit_category" class="btn btn-danger" onclick="this.style.display = 'none'; document.getElementById('spinner{{t.id}}').style.display = 'flex'">
+                  Update
+                </button>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock content %}

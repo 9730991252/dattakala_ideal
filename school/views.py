@@ -116,6 +116,42 @@ def school_expenses(request):
     else:
         return redirect('school_login')
 
+def school_account_category(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        if 'add_category'in request.POST:
+            name = request.POST.get('name')
+            Credit_Debit_category(
+                category_name=name,
+                added_by=clerk
+            ).save()
+            messages.success(request, 'Account Category Added Successfully!')
+            return redirect('school_account_category')
+        if 'edit_category'in request.POST:
+            name = request.POST.get('name')
+            id = request.POST.get('id')
+            Credit_Debit_category.objects.filter(id=id).update(category_name=name)
+            messages.success(request, 'Account Category Updated Successfully!')
+            return redirect('school_account_category')
+        if 'change_status'in request.POST:
+            id = request.POST.get('id')
+            c = Credit_Debit_category.objects.filter(id=id).first()
+            if c.status == 1:
+                c.status = 0
+            else:
+                c.status = 1
+            c.save() 
+            messages.success(request, 'Account Category Status Updated Successfully!')
+            return redirect('school_account_category')                    
+        context={
+            'clerk':clerk,
+            'category':Credit_Debit_category.objects.filter(added_by__batch=clerk.batch)
+        }
+        return render(request, 'account/school_account_category.html', context)
+    else:
+        return redirect('school_login')
+    
 def student_fees(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']
@@ -252,6 +288,7 @@ def student_fee_detail(request, id):
         # Save cash fee logic
         if 'save_cash_fee' in request.POST:
             cash_amount = request.POST.get('received_amount')
+            credit_debit_category = request.POST.get('credit_debit_category')
             pdate = request.POST.get('date')
             # Save cash fee to database (if model exists)
             Student_received_Fee_Cash.objects.create(
@@ -259,6 +296,7 @@ def student_fee_detail(request, id):
                 added_by=clerk,
                 received_amount=cash_amount,
                 paid_date=pdate,
+                credit_debit_category_id=credit_debit_category
             )
             messages.success(request, 'Cash Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
@@ -269,6 +307,8 @@ def student_fee_detail(request, id):
             received_amount = request.POST.get('received_amount')
             pdate = request.POST.get('date')
             utr_number = request.POST.get('utr_number')
+            credit_debit_category = request.POST.get('credit_debit_category')
+            
             # Save cash fee to database (if model exists)
             Student_recived_Fee_Bank.objects.create(
                 student=student,
@@ -277,6 +317,8 @@ def student_fee_detail(request, id):
                 paid_date=pdate,
                 account_id=bank,
                 utr_number=utr_number,
+                credit_debit_category_id=credit_debit_category
+                
             )
             messages.success(request, 'Bank Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
@@ -297,6 +339,7 @@ def student_fee_detail(request, id):
             'remaining_fee':int(total_fee)-int(paid_fee),
             'accounts':Bank_Account.objects.filter(status=1),
             'total_fee': student_fee.objects.filter(student=student, batch=clerk.batch).first(),
+            'credit_debit_category': Credit_Debit_category.objects.filter(status=1)
         }
         return render(request, 'account/student_fee_detail.html', context)
     else:
