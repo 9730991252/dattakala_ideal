@@ -325,6 +325,7 @@ def student_fee_detail(request, id):
             messages.success(request, 'Bank Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
         total_fee = student_fee.objects.filter(student=student, batch=clerk.batch).aggregate(Sum('amount'))['amount__sum'] or 0
+        print('total_fee', total_fee)
         context = {
             'clerk': clerk,
             'student': student,
@@ -336,7 +337,7 @@ def student_fee_detail(request, id):
             'paid_fee':paid_fee,
             'remaining_fee':int(total_fee)-int(paid_fee),
             'accounts':Bank_Account.objects.filter(status=1),
-            'total_fee': student_fee.objects.filter(student=student, batch=clerk.batch).first(),
+            'total_fee': total_fee,
             'credit_debit_category': Credit_Debit_category.objects.filter(status=1),
             'student_fee': student_fee.objects.filter(student=student, batch=clerk.batch),
         }

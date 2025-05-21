@@ -20,6 +20,21 @@
         font-size: 14px;
         flex-wrap: nowrap;
         overflow-x: auto;
+        width: fit-content;
+    }
+    .fee_container {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 20px;
+        margin: 20px auto;
+        max-width: 98%;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: sans-serif;
+        font-size: 14px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
         gap: 20px;
     }
 
@@ -177,6 +192,7 @@
         color: #333;
     }
 </style>
+
 <div class="student_container">
     <div class="student_image">
         {% if student_img and student_img.image %}
@@ -226,22 +242,8 @@
     </div>
 
 </div>
-<div class="student_container" style="font-weight:700;">
-    <div class="info_item2">
-        <div class="info_title ">Total Fee</div>
-        <div class="info_value text-success">₹.{{ total_fee.amount }}</div>
-    </div>
 
-    <div class="info_item2">
-        <div class="info_title">Paid Fee</div>
-        <div class="info_value text-success">₹.{{ paid_fee }}</div>
-    </div>
 
-    <div class="info_item2">
-        <div class="info_title">Remaining Fee</div>
-        <div class="info_value text-danger">₹.{{ remaining_fee }}</div>
-    </div>
-</div>
 
 
 
@@ -273,7 +275,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
     .main_fee_box{
         padding: 10px;
         display: grid;
-        grid-template-columns: 4fr 2fr;
+        grid-template-columns:1.5fr 2fr 4fr;
         gap: 10px;
     }
     #fee_box{ 
@@ -308,265 +310,280 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
 </style>
 
 <div class="main_fee_box">
-    
+    <div class="fee_container" style="font-weight:700;">
+        <div class="info_item2">
+            <div class="info_title ">Total Fee</div>
+            <div class="info_value ">₹.{{ total_fee }}</div>
+        </div>
 
-<div class="container" id="recive_fee_box">
+        <div class="info_item2">
+            <div class="info_title">Paid Fee</div>
+            <div class="info_value text-success">₹.{{ paid_fee }}</div>
+        </div>
 
-    <div style="display: flex;gap: 10px;justify-content: center;margin-top: -50px;margin-bottom: -40px;">
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cash">Recived Cash fee</button>
-<!-- Modal -->
-<div class="modal fade" id="cash" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header custom-modal-header">
-                <h5 class="modal-title">Credit Cash fee</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" class="custom_form" id="cash-form">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" required name="received_amount" step="any">
+        <div class="info_item2">
+            <div class="info_title">Remaining Fee</div>
+            <div class="info_value text-danger">₹.{{ remaining_fee }}</div>
+        </div>
+    </div>
+
+    <div class="container" id="fee_box">
+    <br><br>
+        <div class="fee_header">
+            <div class="fee_header_title">Student Fee</div>
+            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#add_fee" style="font-weight: 900;font-size: small;"><i class="fa-solid fa-plus"></i></button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="add_fee" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content custom-modal">
+                        <div class="modal-header custom-modal-header">
+                            <h5 class="modal-title">Add fee</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" class="custom_form" id="fee-form">
+                            <div class="modal-body">
+                                                    <div class="form-group">
+                                        <select class="form-select" name="credit_debit_category" id="" required>
+                                            <option value="">Select Category</option>
+                                            {% for category in credit_debit_category %}
+                                                <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <input type="number" required name="received_amount" step="any">
+                                </div>
+                            </div>
+                            <div class="modal-footer custom-modal-footer">
+                                <button type="submit" class="submit-btn" id="save_fee" name="save_fee">Add Fee</button>
+                                <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+
+                        <!-- CSS Loader -->
+                        <div id="form-loader_fee">
+                            <div class="spinner"></div>
+                            <p>Saving fee, please wait...</p>
+                        </div>
+                        <script>
+                            const feeform = document.getElementById('fee-form');
+                            const feeloader = document.getElementById('form-loader_fee');
+                            const feeloader_btn = document.getElementById('save_fee');
+
+                            feeform.addEventListener('submit', function () {
+                                feeloader.style.display = 'block';
+                                feeloader_btn.style.display = 'none';
+                            });
+                        </script>
                     </div>
-                    <div class="form-group">
-                            <select class="form-select" name="credit_debit_category" id="" required>
-                                <option value="">Select Category</option>
-                                {% for category in credit_debit_category %}
-                                    <option value="{{ category.id }}">{{ category.category_name }}</option>
+                </div>
+            </div>
+        </div>
+
+        <div class="fee_body">
+            {% for sf in student_fee %}
+            <div class="fee_student_detail_box">
+                <div>₹.{{ sf.amount }}</div>
+                <div>{{ sf.credit_debit_category.category_name }}</div>
+            </div>
+            {% endfor %}
+            <div class="fee_student_detail_box" style="font-weight: 700;">
+                <div>₹.{{ total_fee }}</div>
+                <div>Total</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="recive_fee_box">
+
+        <div style="display: flex;gap: 10px;justify-content: center;margin-top: -50px;margin-bottom: -40px;">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cash">Recived Cash fee</button>
+    <!-- Modal -->
+    <div class="modal fade" id="cash" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal">
+                <div class="modal-header custom-modal-header">
+                    <h5 class="modal-title">Credit Cash fee</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" class="custom_form" id="cash-form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" required name="received_amount" step="any">
+                        </div>
+                        <div class="form-group">
+                                <select class="form-select" name="credit_debit_category" id="" required>
+                                    <option value="">Select Category</option>
+                                    {% for category in credit_debit_category %}
+                                        <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                    {% endfor %}
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" max="{{todayes_date|date:'Y-m-d'}}"  min="{{clerk.batch.start_date|date:'Y-m-d'}}" required name="date">
+                        </div>
+                    </div>
+                    <div class="modal-footer custom-modal-footer">
+                        <button type="submit" class="submit-btn" id="save_cash_fee" name="save_cash_fee">Add Cash</button>
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+                <!-- CSS Loader -->
+                <div id="form-loader_cash">
+                    <div class="spinner"></div>
+                    <p>Saving fee, please wait...</p>
+                </div>
+                <script>
+                    const cashform = document.getElementById('cash-form');
+                    const cashloader = document.getElementById('form-loader_cash');
+                    const cashloader_btn = document.getElementById('save_cash_fee');
+                
+                    cashform.addEventListener('submit', function () {
+                        cashloader.style.display = 'block';
+                        cashloader_btn.style.display = 'none';
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bank">Recived Bank fee</button>
+    <!-- Modal -->
+    <div class="modal fade" id="bank" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal">
+                <div class="modal-header custom-modal-header">
+                    <h5 class="modal-title">Credit Bank fee</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" class="custom_form" id="bank-form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Bank</label>
+                            <select name="bank" class="form-select" required>
+                                <option value="" selected>Select Bank</option>
+                                {% for bank in accounts %}
+                                    <option value="{{bank.id}}">{{bank.bank_name}} - {{bank.account_number}}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+                        <div class="form-group">
+                                <select class="form-select" name="credit_debit_category" id="" required>
+                                    <option value="">Select Category</option>
+                                    {% for category in credit_debit_category %}
+                                        <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                    {% endfor %}
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" required name="received_amount" step="any">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" max="{{todayes_date|date:'Y-m-d'}}"  min="{{clerk.batch.start_date|date:'Y-m-d'}}" required name="date">
+                        </div>
+                        <div class="form-group">
+                            <label>UTR Number</label>
+                            <input type="text" required name="utr_number">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" max="{{todayes_date|date:'Y-m-d'}}"  min="{{clerk.batch.start_date|date:'Y-m-d'}}" required name="date">
+                    <div class="modal-footer custom-modal-footer">
+                        <button type="submit" class="submit-btn" id="save_bank_fee" name="save_bank_fee">Add Bank</button>
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
                     </div>
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="submit" class="submit-btn" id="save_cash_fee" name="save_cash_fee">Add Cash</button>
-                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
+                </form>
 
-            <!-- CSS Loader -->
-            <div id="form-loader_cash">
-                <div class="spinner"></div>
-                <p>Saving fee, please wait...</p>
+                <!-- CSS Loader -->
+                <div id="form-loader_bank">
+                    <div class="spinner"></div>
+                    <p>Saving fee, please wait...</p>
+                </div>
+                <script>
+                    const bankform = document.getElementById('bank-form');
+                    const bankloader = document.getElementById('form-loader_bank');
+                    const bankloader_btn = document.getElementById('save_bank_fee');
+                
+                    cashform.addEventListener('submit', function () {
+                        bankloader.style.display = 'block';
+                        bankloader_btn.style.display = 'nonw';
+                    });
+                </script>
             </div>
-            <script>
-                const cashform = document.getElementById('cash-form');
-                const cashloader = document.getElementById('form-loader_cash');
-                const cashloader_btn = document.getElementById('save_cash_fee');
-            
-                cashform.addEventListener('submit', function () {
-                    cashloader.style.display = 'block';
-                    cashloader_btn.style.display = 'none';
-                });
-            </script>
-        </div>
-    </div>
-</div>
-<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bank">Recived Bank fee</button>
-<!-- Modal -->
-<div class="modal fade" id="bank" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header custom-modal-header">
-                <h5 class="modal-title">Credit Bank fee</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" class="custom_form" id="bank-form">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Bank</label>
-                        <select name="bank" class="form-select" required>
-                            <option value="" selected>Select Bank</option>
-                            {% for bank in accounts %}
-                                <option value="{{bank.id}}">{{bank.bank_name}} - {{bank.account_number}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                            <select class="form-select" name="credit_debit_category" id="" required>
-                                <option value="">Select Category</option>
-                                {% for category in credit_debit_category %}
-                                    <option value="{{ category.id }}">{{ category.category_name }}</option>
-                                {% endfor %}
-                            </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" required name="received_amount" step="any">
-                    </div>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" max="{{todayes_date|date:'Y-m-d'}}"  min="{{clerk.batch.start_date|date:'Y-m-d'}}" required name="date">
-                    </div>
-                    <div class="form-group">
-                        <label>UTR Number</label>
-                        <input type="text" required name="utr_number">
-                    </div>
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="submit" class="submit-btn" id="save_bank_fee" name="save_bank_fee">Add Bank</button>
-                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-
-            <!-- CSS Loader -->
-            <div id="form-loader_bank">
-                <div class="spinner"></div>
-                <p>Saving fee, please wait...</p>
-            </div>
-            <script>
-                const bankform = document.getElementById('bank-form');
-                const bankloader = document.getElementById('form-loader_bank');
-                const bankloader_btn = document.getElementById('save_bank_fee');
-            
-                cashform.addEventListener('submit', function () {
-                    bankloader.style.display = 'block';
-                    bankloader_btn.style.display = 'nonw';
-                });
-            </script>
-        </div>
-    </div>
-</div>
-
-
-</div>
-
-<style>
-    table { 
-        width: 70%; 
-        border-collapse: collapse; 
-        margin:50px auto;
-        }
-    
-    /* Zebra striping */
-    tr:nth-of-type(odd) { 
-        background: #eee; 
-        }
-    
-    th { 
-        background: #3498db; 
-        color: white; 
-        font-weight: bold; 
-        height: fit-content;
-        }
-    
-    td, th { 
-        padding: 10px; 
-        border: 1px solid #ccc; 
-        text-align: left; 
-        font-size: 18px;
-        }
-    
-      </style>
-    <table>
-      <thead>
-        <tr>
-            <th>Paid Date</th>
-          <th>Amount</th>
-          <th>Category</th>
-          <th>UTR</th>
-          <th>Bank</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in cash_fee %}
-        <tr>
-            <td>{{ t.paid_date }}</td>
-            <td>₹.{{t.received_amount}}  Cash</td>
-            <td>{{t.credit_debit_category.category_name}}</td>
-            <td>-</td>
-            <td>-</td>
-        </tr>
-        {% endfor %}
-        {% for t in bank_fee %}
-        <tr>
-            <td>{{ t.paid_date }}</td>
-            <td>₹.{{t.recived_amount}}  Bank</td>
-            <td>{{t.credit_debit_category.category_name}}</td>
-            <td>{{t.utr_number}}</td>
-            <td>{{t.account.bank_name}}, {{t.account.account_number}}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <td colspan="5" style="text-align: start; font-weight: bold;">Total Recived Fee: ₹.{{ paid_fee }}</td>
-        </tr>
-      </tbody>
-    </table>
-
-</div>
-
-<div class="container" id="fee_box">
-<br><br>
-    <div class="fee_header">
-        <div class="fee_header_title">Student Fee</div>
-        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#add_fee" style="font-weight: 900;font-size: medium;"><i class="fa-solid fa-plus"></i></button>
-
-<!-- Modal -->
-<div class="modal fade" id="add_fee" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header custom-modal-header">
-                <h5 class="modal-title">Add fee</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" class="custom_form" id="fee-form">
-                <div class="modal-body">
-                                        <div class="form-group">
-                            <select class="form-select" name="credit_debit_category" id="" required>
-                                <option value="">Select Category</option>
-                                {% for category in credit_debit_category %}
-                                    <option value="{{ category.id }}">{{ category.category_name }}</option>
-                                {% endfor %}
-                            </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" required name="received_amount" step="any">
-                    </div>
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="submit" class="submit-btn" id="save_fee" name="save_fee">Add Fee</button>
-                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-
-            <!-- CSS Loader -->
-            <div id="form-loader_fee">
-                <div class="spinner"></div>
-                <p>Saving fee, please wait...</p>
-            </div>
-            <script>
-                const feeform = document.getElementById('fee-form');
-                const feeloader = document.getElementById('form-loader_fee');
-                const feeloader_btn = document.getElementById('save_fee');
-
-                feeform.addEventListener('submit', function () {
-                    feeloader.style.display = 'block';
-                    feeloader_btn.style.display = 'none';
-                });
-            </script>
-        </div>
-    </div>
-                    cashloader_btn.style.display = 'none';
-                });
-            </script>
         </div>
     </div>
 
-    <div class="fee_body">
-        {% for sf in student_fee %}
-        <div class="fee_student_detail_box">
-            <div>₹.{{ sf.amount }}</div>
-            <div>{{ sf.credit_debit_category.category_name }}</div>
-            <div>{{ sf.added_date|date:'Y-m-d' }}</div>
-        </div>
-        {% endfor %}
+
+    </div>
+
+    <style>
+        table { 
+            width: 90%; 
+            border-collapse: collapse; 
+            margin:50px auto;
+            }
+        
+        /* Zebra striping */
+        tr:nth-of-type(odd) { 
+            background: #eee; 
+            }
+        
+        th { 
+            background: #3498db; 
+            color: white; 
+            font-weight: bold; 
+            height: fit-content;
+            }
+        
+        td, th { 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            text-align: left; 
+            font-size: 15px;
+            }
+        
+        </style>
+        <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>UTR</th>
+            <th>Bank</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in cash_fee %}
+            <tr>
+                <td>{{ t.paid_date|date:'d-m-y' }}</td>
+                <td>₹.{{t.received_amount}}  Cash</td>
+                <td>{{t.credit_debit_category.category_name}}</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+            {% endfor %}
+            {% for t in bank_fee %}
+            <tr>
+                <td>{{ t.paid_date|date:'d-m-y' }}</td>
+                <td>₹.{{t.recived_amount}}  Bank</td>
+                <td>{{t.credit_debit_category.category_name}}</td>
+                <td>{{t.utr_number}}</td>
+                <td>{{t.account.bank_name}}, {{t.account.account_number}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="5" style="text-align: start; font-weight: bold;">Total Recived Fee: ₹.{{ paid_fee }}</td>
+            </tr>
+        </tbody>
+        </table>
+
     </div>
 </div>
-    </div>
 
 </div>
 
