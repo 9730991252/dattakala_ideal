@@ -101,9 +101,11 @@ def get_bank_credits(batch_id, bank_id):
             'recived_date':sb.paid_date,
             'admin_verify_status':sb.admin_verify_status,
             'verify_date':sb.verify_date,
+            'verify_by':sb.verify_by,
             'utr_number':sb.utr_number,
             'student':sb.student,
             'student_img':Student_Image.objects.filter(student=sb.student).first(),
+            'category':sb.credit_debit_category,
         })
     for ctb in Cash_Transfer_To_Bank.objects.filter(to_bank_id=bank_id):
         bank_credits.append({
@@ -115,13 +117,26 @@ def get_bank_credits(batch_id, bank_id):
             'from_admin':ctb.from_admin,
             'admin_verify_status':ctb.admin_verify_status,
             'verify_date':ctb.verify_date,
+            
         })
     bank_credits = sorted(bank_credits, key=lambda k: k['recived_date'], reverse=True)
     return bank_credits
 
 def get_cash_credits(batch_id):
     cash_credits = []
-
+    for sb in Student_received_Fee_Cash.objects.all():
+        cash_credits.append({
+            'credit_type':'Student_received_Fee_Cash',
+            'id':sb.id,
+            'recived_amount':sb.received_amount,
+            'recived_date':sb.paid_date,
+            'admin_verify_status':sb.admin_verify_status, 
+            'verify_date':sb.veryfy_date,
+            'verify_by':sb.veryfy_by,
+            'student':sb.student,
+            'student_img':Student_Image.objects.filter(student=sb.student).first(),
+            'category':sb.credit_debit_category,
+        })
     return cash_credits
 
 @csrf_exempt
@@ -137,12 +152,13 @@ def credit(request):
             selected_bank = Bank_Account.objects.filter(id=bank_id).first()
             bank_credits = get_bank_credits(a.batch.id, bank_id)
         if 'get_statment_cash'in request.POST:
-            selected_bank = Bank_Account.objects.filter(id=bank_id).first()
             cash_credits = get_cash_credits(a.batch.id)
         context={
             'bank_accounts':Bank_Account.objects.all(),
             'selected_bank':selected_bank,
-            'bank_credits':bank_credits
+            'bank_credits':bank_credits,
+            'cash_credits':cash_credits,
+            'a':a
         }
         return render(request, 'credit.html', context)
     else:

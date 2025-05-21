@@ -67,10 +67,13 @@ def verify_bank_credit(request):
     if request.method == 'GET':
         id = request.GET['id']
         credit_type = request.GET['credit_type']
+        mobile = request.session['admin_mobile']
+        admin = Admin_detail.objects.filter(mobile=mobile).first()
         if credit_type == 'Student_recived_Fee_Bank':
             c = Student_recived_Fee_Bank.objects.filter(id=id).first()
             if c:
                 c.admin_verify_status = 1
+                c.verify_by = admin
                 c.verify_date = datetime.now()
                 c.save()
         elif credit_type == 'Cash_Transfer_To_Bank':

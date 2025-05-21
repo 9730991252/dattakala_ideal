@@ -11,6 +11,13 @@ class Batch(models.Model):
     status = models.IntegerField(default=1)
     edit_status = models.IntegerField(default=1)
     
+class Admin_detail(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True, related_name='batch')
+    name = models.CharField(max_length=100, null=True)
+    mobile = models.IntegerField(null=True)
+    pin =models.CharField(max_length=10, null=True)
+    status = models.IntegerField(default=1, null=True)
+    
 class Clerk(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='clerks')
     name = models.CharField(max_length=100, unique=True)
@@ -157,6 +164,7 @@ class Student_recived_Fee_Bank(models.Model):
     account = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, null=True, blank=True)
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)
+    verify_by = models.ForeignKey(Admin_detail, on_delete=models.CASCADE, null=True)
     utr_number = models.CharField(max_length=100, null=True, blank=True)
     
 class Cash_Transfer_To_Bank(models.Model):
@@ -196,12 +204,6 @@ class Expenses(models.Model):
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)
 
-class Admin_detail(models.Model):
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True, related_name='batch')
-    name = models.CharField(max_length=100, null=True)
-    mobile = models.IntegerField(null=True)
-    pin =models.CharField(max_length=10, null=True)
-    status = models.IntegerField(default=1, null=True)
     
 class student_fee(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
@@ -222,6 +224,6 @@ class Student_received_Fee_Cash(models.Model):
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     updated_date = models.DateTimeField(auto_now=True, null=True)
     updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_student_received_fee')
+    admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     veryfy_date = models.DateTimeField(null=True, blank=True)
     veryfy_by = models.ForeignKey(Admin_detail, on_delete=models.CASCADE, null=True, related_name='veryfy_by_student_received_fee')
-    

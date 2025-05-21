@@ -179,6 +179,8 @@
                 <div>
                     <img src="{% if bc.student_img %}{{bc.student_img.image.url}}{% endif %}" style="border-radius: 5px;" alt="">From, {{bc.student.name}}
                 </div>
+
+                    <div class="date">Category {{bc.category.category_name}}</div>
                 <div class="date">UTR {{bc.utr_number}}</div>
             {% endif %}
             </div>
@@ -187,7 +189,7 @@
             {% if bc.admin_verify_status == 0 %}
                 <button type="button" style="width: 100%;" onclick="verify('{{bc.id}}', '{{bc.credit_type}}')" class="btn btn-success">Verify</button>
             {% else %}
-                <div class="text-success text-center fw-bold">Verifyed {{bc.verify_date}}</div>
+                <div class="text-success text-center fw-bold">Verifyed, By {{bc.verify_by.name}} {{bc.verify_date}}</div>
             {% endif %}
         </div>
     </div>
@@ -205,7 +207,7 @@
             credit_type:credit_type
           },
           success: function(res){
-            document.getElementById('verify_btn_box'+credit_type+id).innerHTML = '<div class="text-success text-center fw-bold">Verifyed '+res.datetime+'</div>'
+            document.getElementById('verify_btn_box'+credit_type+id).innerHTML = '<div class="text-success text-center fw-bold">Verifyed, by {{a.name}} '+res.datetime+'</div>'
           }
       })
     }
