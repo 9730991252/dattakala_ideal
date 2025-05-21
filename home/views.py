@@ -35,6 +35,19 @@ def check_avalable_cash(request, batch):
     avalable_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
     avalable_cash -= Expenses.objects.filter(batch=batch, type='cash').aggregate(Sum('amount'))['amount__sum'] or 0
     return avalable_cash
+ 
+def check_banks_avalable_amount(request, batch):
+    banks=[]
+    for b in Bank_Account.objects.filter(status=1):               
+        avalable_cash = Cash_Transfer_To_Bank.objects.filter(batch=batch, to_bank=b).aggregate(Sum('amount'))['amount__sum'] or 0
+        avalable_cash += Student_recived_Fee_Bank.objects.filter(added_by__batch=batch, account=b).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+        banks.append({
+            'bank_name': b.bank_name,
+            'account_number': b.account_number,
+            'avalable_amount': avalable_cash
+        })
+    return banks
+
 
 
 def index(request):

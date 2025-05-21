@@ -44,6 +44,7 @@ def admin_home(request):
                 'list':list
             })
         avalable_cash = check_avalable_cash(request, a.batch)
+        banks_avalable_amount = check_banks_avalable_amount(request, a.batch)
         context={
             'total_students':Student.objects.all().count(),
             'male_students':Student.objects.filter(gender='MALE').count(),
@@ -54,7 +55,8 @@ def admin_home(request):
             'check_in':Student_Attendance.objects.filter(check_in__date=now().date()).count(),
             'check_out':Student_Attendance.objects.filter(check_out__date=now().date()).count(),
             'class':classes,
-            'avalable_cash':avalable_cash
+            'avalable_cash':avalable_cash,
+            'banks_avalable_amount':banks_avalable_amount,
         }
         return render(request, 'admin_home.html', context)
     else:

@@ -65,10 +65,18 @@
         color: #22543d;
     }
 </style>
+<div style="display: flex;gap: 10px;justify-content: center;flex-wrap: wrap;">
 
-<div class="cash-widget">
-    <div class="cash-label">Clerk Available Cash</div>
-    <div class="cash-amount">Rs.{{ avalable_cash }}</div>
+    <div class="cash-widget">
+        <div class="cash-label">Shinde Somnath Bhiku Available Cash</div>
+        <div class="cash-amount">Rs.{{ avalable_cash }}</div>
+    </div>
+    {% for b in banks_avalable_amount %}
+    <div class="cash-widget">
+        <div class="cash-label">{{b.bank_name}} Available Cash</div>
+        <div class="cash-amount">Rs.{{ b.avalable_amount }}</div>
+    </div>
+    {% endfor %}
 </div>
 
 
