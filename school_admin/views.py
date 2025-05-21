@@ -76,7 +76,16 @@ def admin_student_approval(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
         a = Admin_detail.objects.filter(mobile=mobile).first()
+        student_fees = []
+        for s in Student.objects.filter(status=1):
+            sf = student_fee.objects.filter(student_id=s.id, batch=a.batch)
+            if sf:
+                student_fees.append({
+                    'student':s,
+                    'fee':sf
+                })
         context={
+            'student_fees':student_fees
         }
         return render(request, 'admin_student_approval.html', context)
     else:

@@ -326,7 +326,20 @@ def student_fee_detail(request, id):
             return redirect('student_fee_detail', id=id)
         total_fee = student_fee.objects.filter(student=student, batch=clerk.batch).aggregate(Sum('amount'))['amount__sum'] or 0
         print('total_fee', total_fee)
+        student_fee_detail = []
+        for cdt in Credit_Debit_category.objects.filter(status=1):
+            detail_total_fee = student_fee.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('amount'))['amount__sum'] or 0
+            detail_paid_fee = Student_received_Fee_Cash.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+            detail_paid_fee += Student_recived_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            student_fee_detail.append({
+                'category': cdt,
+                'total_fee': detail_total_fee,
+                'detail_paid_fee': detail_paid_fee,
+                'reamining_fee': detail_total_fee - detail_paid_fee
+            })
+
         context = {
+            'student_fee_detail': student_fee_detail,
             'clerk': clerk,
             'student': student,
             'student_img': student_img,
@@ -613,9 +626,10 @@ def add_student(request):
             elif date_of_birth == '':
                 messages.error(request, 'Please enter date_of_birth number!')
 
-            elif aadhar_number == '':
+            elif aadhar_number == '' :
                 messages.error(request, 'Please enter Student Aadhar_number number!')
-                
+            elif int(aadhar_number) < 12:
+                messages.error(request, 'Please enter Student Aadhar_number 12 digit!')
             elif gender == '':
                 messages.error(request, 'Please Select Student gender!')
                 

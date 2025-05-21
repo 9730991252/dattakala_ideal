@@ -35,7 +35,6 @@
         font-size: 14px;
         flex-wrap: nowrap;
         overflow-x: auto;
-        gap: 20px;
     }
 
     .student_image img {
@@ -53,6 +52,7 @@
     }
     .info_item2 {
         display: flex;
+        justify-content: space-between;
         gap: 5px;
         min-width: 120px;
     }
@@ -276,7 +276,6 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
         padding: 10px;
         display: grid;
         grid-template-columns:1.5fr 2fr 4fr;
-        gap: 10px;
     }
     #fee_box{ 
         border-radius: 10px;
@@ -310,7 +309,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
 </style>
 
 <div class="main_fee_box">
-    <div class="fee_container" style="font-weight:700;">
+    <div class="fee_container" >
         <div class="info_item2">
             <div class="info_title ">Total Fee</div>
             <div class="info_value ">₹.{{ total_fee }}</div>
@@ -320,8 +319,13 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
             <div class="info_title">Paid Fee</div>
             <div class="info_value text-success">₹.{{ paid_fee }}</div>
         </div>
-
+        {% for sfd in student_fee_detail %}
         <div class="info_item2">
+            <div class="info_title">{{sfd.category.category_name}}</div>
+            <div class="info_value text-danger">₹.{{ sfd.reamining_fee }}</div>
+        </div>
+        {% endfor %}
+        <div class="info_item2 alert alert-danger alert-sm">
             <div class="info_title">Remaining Fee</div>
             <div class="info_value text-danger">₹.{{ remaining_fee }}</div>
         </div>
