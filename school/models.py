@@ -136,17 +136,17 @@ class Clerk_used_count(models.Model):
     used_count = models.IntegerField(default=0)
 
     
-class Credit_Debit_category(models.Model):
-    category_name = models.CharField(max_length=100)
-    order_by = models.IntegerField(default=0)
-    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_credit_debit_category')
-    added_date = models.DateTimeField(auto_now_add=True, null=True)
-    updated_date = models.DateTimeField(auto_now=True, null=True)
-    updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_credit_debit_category')
-    status = models.IntegerField(default=1)
+# class Credit_Debit_category(models.Model):
+#     category_name = models.CharField(max_length=100)
+#     order_by = models.IntegerField(default=0)
+#     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_credit_debit_category')
+#     added_date = models.DateTimeField(auto_now_add=True, null=True)
+#     updated_date = models.DateTimeField(auto_now=True, null=True)
+#     updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_credit_debit_category')
+#     status = models.IntegerField(default=1)
 
 class Student_recived_Fee_Bank(models.Model):
-    credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
+    # credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     recived_amount = models.FloatField(default=0)
     paid_date = models.DateField(null=True)
@@ -215,7 +215,7 @@ class student_fee(models.Model):
     
 class Student_received_Fee_Cash(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
+    # credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
     received_amount = models.FloatField(default=0)
     paid_date = models.DateField(null=True)
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_received_fee')
