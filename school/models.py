@@ -206,6 +206,7 @@ class Expenses(models.Model):
 
     
 class student_fee(models.Model):
+    credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)

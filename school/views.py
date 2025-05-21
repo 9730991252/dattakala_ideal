@@ -274,13 +274,15 @@ def student_fee_detail(request, id):
         bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=clerk.batch)
         paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
 
-        if 'save_total_fee' in request.POST:
-            total_fee = request.POST.get('amount')
+        if 'save_fee' in request.POST:
+            total_fee = request.POST.get('received_amount')
+            credit_debit_category = request.POST.get('credit_debit_category')
             student_fee.objects.create(
                 batch=clerk.batch,
                 student=student,
                 added_by=clerk,
                 amount=total_fee,
+                credit_debit_category_id=credit_debit_category
             )
             messages.success(request, 'Total Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
@@ -322,11 +324,7 @@ def student_fee_detail(request, id):
             )
             messages.success(request, 'Bank Fee Saved successfully')
             return redirect('student_fee_detail', id=id)
-        total_fee = student_fee.objects.filter(student=student, batch=clerk.batch).first()
-        if total_fee:
-            total_fee = total_fee.amount
-        else:
-            total_fee = 0
+        total_fee = student_fee.objects.filter(student=student, batch=clerk.batch).aggregate(Sum('amount'))['amount__sum'] or 0
         context = {
             'clerk': clerk,
             'student': student,
@@ -339,7 +337,8 @@ def student_fee_detail(request, id):
             'remaining_fee':int(total_fee)-int(paid_fee),
             'accounts':Bank_Account.objects.filter(status=1),
             'total_fee': student_fee.objects.filter(student=student, batch=clerk.batch).first(),
-            'credit_debit_category': Credit_Debit_category.objects.filter(status=1)
+            'credit_debit_category': Credit_Debit_category.objects.filter(status=1),
+            'student_fee': student_fee.objects.filter(student=student, batch=clerk.batch),
         }
         return render(request, 'account/student_fee_detail.html', context)
     else:

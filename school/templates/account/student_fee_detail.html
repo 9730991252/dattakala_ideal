@@ -36,6 +36,11 @@
         flex-direction: column;
         min-width: 120px;
     }
+    .info_item2 {
+        display: flex;
+        gap: 5px;
+        min-width: 120px;
+    }
 
     .info_title {
         font-weight: bold;
@@ -172,9 +177,6 @@
         color: #333;
     }
 </style>
-<br>
-<a href="/school/student_fees/" class="btn btn-sm btn-success">Back</a>
-
 <div class="student_container">
     <div class="student_image">
         {% if student_img and student_img.image %}
@@ -212,7 +214,7 @@
     </div>
     <div class="info_item">
         <div class="info_title">Address</div>
-        <div class="info_value">{{ student.address }}</div>
+        <div class="info_value">{{ student.address|slice:'10' }}</div>
     </div>
     <div class="info_item">
         <div class="info_title">Added</div>
@@ -222,74 +224,25 @@
         <div class="info_title">Added By</div>
         <div class="info_value">{{ student.added_by.name }}</div>
     </div>
-    <div class="info_item">
-        <div class="info_title">Fee</div>
-        <div class="info_value">
-            {% if total_fee %}
-                ₹.{{ total_fee.amount }}
-            {% else %}
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add-fee-modal">Add student Fee</button>
-            {% endif %}
-        </div>
-    </div>
+
 </div>
 <div class="student_container" style="font-weight:700;">
-    <div class="info_item">
+    <div class="info_item2">
         <div class="info_title ">Total Fee</div>
         <div class="info_value text-success">₹.{{ total_fee.amount }}</div>
     </div>
 
-    <div class="info_item">
+    <div class="info_item2">
         <div class="info_title">Paid Fee</div>
         <div class="info_value text-success">₹.{{ paid_fee }}</div>
     </div>
 
-    <div class="info_item">
+    <div class="info_item2">
         <div class="info_title">Remaining Fee</div>
         <div class="info_value text-danger">₹.{{ remaining_fee }}</div>
     </div>
 </div>
 
-<!-- Modal for Adding Fee -->
-<div class="modal fade" id="add-fee-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header custom-modal-header">
-                <h5 class="modal-title">Add Fee</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" class="custom_form" id="fee-form">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Amount</label>
-                        <input type="number" required name="amount" step="any">
-                    </div>
-             
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="submit" class="submit-btn" id="save_total_fee" name="save_total_fee">Add Cash</button>
-                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-
-            <!-- CSS Loader -->
-            <div id="form-loader_fee">
-                <div class="spinner"></div>
-                <p>Saving fee, please wait...</p>
-            </div>
-            <script>
-                const feeform = document.getElementById('fee-form');
-                const feeloader = document.getElementById('form-loader_fee');
-                const feeloader_btn = document.getElementById('save_cash_fee');
-            
-                feeform.addEventListener('submit', function () {
-                    feeloader.style.display = 'block';
-                    feeloader_btn.style.display = 'none';
-                });
-            </script>
-        </div>
-    </div>
-</div>
 
 
 
@@ -316,10 +269,51 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
 </script>
 <br>
 
-<div class="container">
+<style>
+    .main_fee_box{
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 4fr 2fr;
+        gap: 10px;
+    }
+    #fee_box{ 
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        width: 100%;
+        position: relative;
+        .fee_header{
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            font-weight: 600;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 3px;
+            background-color: #e0efff;
+        }
+        .fee_body{
+            width: 100%;
+        }
+        .fee_student_detail_box{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            border-bottom: 1px solid #ccc;
+            justify-content: space-evenly;
 
-    <div style="display: flex;gap: 10px;justify-content: center;">
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cash">Credit Cash fee</button>
+        }
+    }
+</style>
+
+<div class="main_fee_box">
+    
+
+<div class="container" id="recive_fee_box">
+
+    <div style="display: flex;gap: 10px;justify-content: center;margin-top: -50px;margin-bottom: -40px;">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cash">Recived Cash fee</button>
 <!-- Modal -->
 <div class="modal fade" id="cash" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -371,7 +365,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
         </div>
     </div>
 </div>
-<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bank">Credit Bank fee</button>
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bank">Recived Bank fee</button>
 <!-- Modal -->
 <div class="modal fade" id="bank" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -456,6 +450,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
         background: #3498db; 
         color: white; 
         font-weight: bold; 
+        height: fit-content;
         }
     
     td, th { 
@@ -472,7 +467,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
             <th>Paid Date</th>
           <th>Amount</th>
           <th>Category</th>
-          <th>UTR Number</th>
+          <th>UTR</th>
           <th>Bank</th>
         </tr>
       </thead>
@@ -496,10 +491,86 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
         </tr>
         {% endfor %}
         <tr>
-            <td colspan="4" style="text-align: start; font-weight: bold;">Total Recived Fee: ₹.{{ paid_fee }}</td>
+            <td colspan="5" style="text-align: start; font-weight: bold;">Total Recived Fee: ₹.{{ paid_fee }}</td>
         </tr>
       </tbody>
     </table>
 
 </div>
+
+<div class="container" id="fee_box">
+<br><br>
+    <div class="fee_header">
+        <div class="fee_header_title">Student Fee</div>
+        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#add_fee" style="font-weight: 900;font-size: medium;"><i class="fa-solid fa-plus"></i></button>
+
+<!-- Modal -->
+<div class="modal fade" id="add_fee" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title">Add fee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="custom_form" id="fee-form">
+                <div class="modal-body">
+                                        <div class="form-group">
+                            <select class="form-select" name="credit_debit_category" id="" required>
+                                <option value="">Select Category</option>
+                                {% for category in credit_debit_category %}
+                                    <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" required name="received_amount" step="any">
+                    </div>
+                </div>
+                <div class="modal-footer custom-modal-footer">
+                    <button type="submit" class="submit-btn" id="save_fee" name="save_fee">Add Fee</button>
+                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+            <!-- CSS Loader -->
+            <div id="form-loader_fee">
+                <div class="spinner"></div>
+                <p>Saving fee, please wait...</p>
+            </div>
+            <script>
+                const feeform = document.getElementById('fee-form');
+                const feeloader = document.getElementById('form-loader_fee');
+                const feeloader_btn = document.getElementById('save_fee');
+
+                feeform.addEventListener('submit', function () {
+                    feeloader.style.display = 'block';
+                    feeloader_btn.style.display = 'none';
+                });
+            </script>
+        </div>
+    </div>
+                    cashloader_btn.style.display = 'none';
+                });
+            </script>
+        </div>
+    </div>
+
+    <div class="fee_body">
+        {% for sf in student_fee %}
+        <div class="fee_student_detail_box">
+            <div>₹.{{ sf.amount }}</div>
+            <div>{{ sf.credit_debit_category.category_name }}</div>
+            <div>{{ sf.added_date|date:'Y-m-d' }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+    </div>
+
+</div>
+
+
+</div>
+ 
 {% endblock content %}
