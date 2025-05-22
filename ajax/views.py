@@ -63,6 +63,42 @@ def search_student_for_edit(request):
         t = render_to_string('search_student_for_edit.html', context)
     return JsonResponse({'t': t})
 
+def search_student_for_view_admin(request):
+    if request.method == 'GET':
+        words = request.GET['words']
+        mobile = request.session['admin_mobile']
+        a = Admin_detail.objects.filter(mobile=mobile).first()
+        s = []
+        if words:
+            student = list(Student.objects.filter(name__icontains=words))
+            student += Student.objects.filter(mobile__icontains=words)
+            student += Student.objects.filter(aadhar_number__icontains=words)
+            for i in student:
+                school_class = Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first()
+                total_fee = student_fee.objects.filter(student_id=i.id, batch=a.batch).aggregate(Sum('amount'))['amount__sum'] or 0
+                total_fee_paid = Student_received_Fee_Cash.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+                total_fee_paid += Student_recived_Fee_Bank.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+                reamining_fee = total_fee - total_fee_paid or 0
+                
+                s.append({
+                    'id':i.id,
+                    'name':i.name,
+                    'mobile':i.mobile,
+                    'aadhar_number':i.aadhar_number,
+                    'gender':i.gender,
+                    'img':Student_Image.objects.filter(student_id=i.id).first(),
+                    'class_name':school_class.school_class.name if school_class else 'Not Selected',
+                    'total_fee':total_fee,
+                    'total_fee_paid':total_fee_paid,
+                    'reamining_fee':reamining_fee,
+                })
+            s = sorted(s, key=lambda k: k['reamining_fee'], reverse=True)
+        context = {
+            'students':s
+        }
+        t = render_to_string('search_student_for_view_admin.html', context)
+    return JsonResponse({'t': t})
+
 def verify_bank_credit(request):
     if request.method == 'GET':
         id = request.GET['id']

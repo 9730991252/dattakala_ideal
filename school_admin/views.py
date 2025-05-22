@@ -72,6 +72,50 @@ def admin_account(request):
     else:
         return redirect('Admin_detail')
     
+def admin_view_student_detail(request, id):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        a = Admin_detail.objects.filter(mobile=mobile).first()
+        student = get_object_or_404(Student, id=id)
+        student_img = Student_Image.objects.filter(student=student).first()
+        class_info = Class_student.objects.filter(student=student, batch=a.batch).select_related('batch', 'school_class').first()
+        cash_fee = Student_received_Fee_Cash.objects.filter(student=student, added_by__batch=a.batch)
+        bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=a.batch)
+        paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
+        total_fee = student_fee.objects.filter(student=student, batch=a.batch).aggregate(Sum('amount'))['amount__sum'] or 0
+        print('total_fee', total_fee)
+        student_fee_detail = []
+        for cdt in Credit_Debit_category.objects.filter(status=1):
+            detail_total_fee = student_fee.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('amount'))['amount__sum'] or 0
+            detail_paid_fee = Student_received_Fee_Cash.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+            detail_paid_fee += Student_recived_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            if detail_total_fee >0:
+                student_fee_detail.append({
+                    'category': cdt,
+                    'total_fee': detail_total_fee,
+                    'detail_paid_fee': detail_paid_fee,
+                    'reamining_fee': detail_total_fee - detail_paid_fee
+                })
+
+        context = {
+            'student_fee_detail': student_fee_detail,
+            'student': student,
+            'student_img': student_img,
+            'class_info': class_info,
+            'todayes_date':date.today(),
+            'cash_fee':cash_fee,
+            'bank_fee':bank_fee,
+            'paid_fee':paid_fee,
+            'remaining_fee':int(total_fee)-int(paid_fee),
+            'accounts':Bank_Account.objects.filter(status=1),
+            'total_fee': total_fee,
+            'credit_debit_category': Credit_Debit_category.objects.filter(status=1),
+            'student_fee': student_fee.objects.filter(student=student, batch=a.batch),
+        }
+        return render(request, 'admin_view_student_detail.html', context)
+    else:
+        return redirect('Admin_detail')
+    
 def admin_student_approval(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
@@ -80,8 +124,14 @@ def admin_student_approval(request):
         for s in Student.objects.filter(status=1):
             sf = student_fee.objects.filter(student_id=s.id, batch=a.batch)
             if sf:
+                class_student = Class_student.objects.filter(student_id=s.id, added_by__batch=a.batch).first()
+                if class_student:
+                    class_name = class_student.school_class.name
+                else:
+                    class_name = 'Not Selected'
                 student_fees.append({
                     'student':s,
+                    'class_name':class_name,
                     'fee':sf
                 })
         context={
@@ -236,11 +286,8 @@ def admin_view_students(request):
              
             school_class = Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first()
             
-            total_fee = student_fee.objects.filter(student_id=i.id, batch=a.batch).first()
-            if total_fee:
-                total_fee = total_fee.amount
-            else:
-                total_fee = 0
+            total_fee = student_fee.objects.filter(student_id=i.id, batch=a.batch).aggregate(Sum('amount'))['amount__sum'] or 0
+
             
             total_fee_paid = Student_received_Fee_Cash.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             total_fee_paid += Student_recived_Fee_Bank.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
@@ -259,7 +306,7 @@ def admin_view_students(request):
                 'total_fee_paid':total_fee_paid,
                 'reamining_fee':reamining_fee,
             })
-        s = sorted(s, key=lambda k: k['reamining_fee'], reverse=False)
+        s = sorted(s, key=lambda k: k['reamining_fee'], reverse=True)
         context={
             'students':s,
             'total_students':Student.objects.all().count(),

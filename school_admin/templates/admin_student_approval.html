@@ -128,33 +128,86 @@
 {% include 'admin_navbar.html' %}
 {% include 'alert.html' %}
 {% include 'admin_account_menu.html' %}
-
-    {% for bc in student_fees %}
-    <div class="bank_statement_box">
-        <div class="statement-header">
-            <div class="amount">Rs. {{ bc.amount }}</div>
-            <div class="date">{{ bc.date }}</div>
-        </div>
-        <div class="statement-footer">
-            <div class="origin-badge">
-            From, Clerk {{bc.added_by.name}} - {{bc.type}}
-            {% if bc.from_bank.id %}
-                <div class="date">Bank {{bc.from_bank.bank_name}} - {{bc.from_bank.account_number}}</div>
-                <div class="date">Check Number {{bc.check_number}}</div>
-            {% endif %}
-            </div><br>
-
-        </div>
-        <p style="margin-top: -5px;">{{bc.remark}}</p>
-        <div id="verify_btn_box{{bc.id}}">
-            {% if bc.admin_verify_status == 0 %}
-                <button type="button" style="width: 100%;" onclick="verify('{{bc.id}}')" class="btn btn-success">Verify</button>
-            {% else %}
-                <div class="text-success text-center fw-bold">Verifyed {{bc.verify_date}}</div>
-            {% endif %}
-        </div>
+<style>
+    .file_input{
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        border: 3px dashed #999;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        i{
+            font-size: 24px;
+        }
+    }
+    .student_box{
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        width: 350px;
+        margin: 0 auto;
+        position: relative;
+    }
+    .name_mobile_box{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        .name{
+            font-size: 15px;
+            font-weight: bold;
+        }
+    }
+    .adhar_number_gender{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    
+    }
+    .fee{
+        position: absolute;
+        bottom:0;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        text-align: center;
+    }
+    </style>
+   <!-- Student Upload Loop -->
+{% for s in student_fees %}
+<div class="student_box">
+    <div class="img_box">
+        <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" style="width: 100px; border-radius: 10px;" alt="">
     </div>
-    {% endfor %}
+
+    <div class="name_mobile_box">
+        <div class="name" style="text-transform: capitalize;">{{s.student.name}}</div>
+        <div class="mobile"><a href="tel:{{s.student.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.student.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.student.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
+        <div class="adhar_number">Class. {{s.class_name}}</div>
+    </div>
+    <div style=" display: flex; justify-content: space-evenly; grid-column-start: 1;grid-column-end: 3;">
+        <div class="" >Total Fee </div>
+        <div class="text-success">Received Fee</div>
+        <div class="text-danger">Remaining Fee</div>
+    </div>
+    <div style=" display: flex; margin-top: -30px; justify-content: space-evenly; grid-column-start: 1;grid-column-end: 3;">
+        <div class="" >₹{{s.total_fee}}</div>
+        <div class="text-success">₹{{s.total_fee_paid}}</div>
+        <div class="text-danger">₹{{s.remaining_fee}}</div>
+    </div>
+    
+</div>
+<br>
+{% endfor %}
 
 
 <script>

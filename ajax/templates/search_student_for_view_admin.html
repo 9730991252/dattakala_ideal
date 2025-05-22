@@ -1,0 +1,32 @@
+{% for s in students %}
+<a href="/school_admin/admin_view_student_detail/{{s.id}}" style="text-decoration: none;color: black;">
+<div class="student_box">
+    <div class="img_box">
+        {% if s.img != None %}
+        <img src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% else %}
+        <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" style="width: 100px; border-radius: 10px;" alt="">
+        {% endif %}
+    </div>
+ 
+    <div class="name_mobile_box">
+        <div class="name" style="text-transform: capitalize;">{{s.name}}</div>
+        <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
+        <div class="adhar_number">Class. {{s.class_name}}</div>
+    </div>
+    <div style=" display: flex; justify-content: space-evenly; grid-column-start: 1;grid-column-end: 3;">
+        <div class="" >Total Fee </div>
+        <div class="text-success">Received Fee</div>
+        <div class="text-danger">Remaining Fee</div>
+    </div>
+    <div style=" display: flex; margin-top: -30px; justify-content: space-evenly; grid-column-start: 1;grid-column-end: 3;">
+        <div class="" >₹{{s.total_fee}}</div>
+        <div class="text-success">₹{{s.total_fee_paid}}</div>
+        <div class="text-danger">₹{{s.reamining_fee}}</div>
+    </div>
+    
+</div>
+</a>
+<br>
+
+{% endfor %}

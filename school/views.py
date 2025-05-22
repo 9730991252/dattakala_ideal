@@ -331,12 +331,13 @@ def student_fee_detail(request, id):
             detail_total_fee = student_fee.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('amount'))['amount__sum'] or 0
             detail_paid_fee = Student_received_Fee_Cash.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             detail_paid_fee += Student_recived_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
-            student_fee_detail.append({
-                'category': cdt,
-                'total_fee': detail_total_fee,
-                'detail_paid_fee': detail_paid_fee,
-                'reamining_fee': detail_total_fee - detail_paid_fee
-            })
+            if detail_total_fee >0:
+                student_fee_detail.append({
+                    'category': cdt,
+                    'total_fee': detail_total_fee,
+                    'detail_paid_fee': detail_paid_fee,
+                    'reamining_fee': detail_total_fee - detail_paid_fee
+                })
 
         context = {
             'student_fee_detail': student_fee_detail,
