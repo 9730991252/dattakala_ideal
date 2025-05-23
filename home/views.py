@@ -58,10 +58,6 @@ def check_banks_available_amount(request, batch):
 
 
 def index(request):
-    Expenses.objects.all().delete()
-    Student_received_Fee_Cash.objects.all().delete()
-    Student_received_Fee_Bank.objects.all().delete()
-    student_fee.objects.all().delete()
     context = {
         'visitor': check_new_visitor(request),
     }

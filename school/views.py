@@ -275,8 +275,8 @@ def student_fee_detail(request, id):
         student_img = Student_Image.objects.filter(student=student).first()
         class_info = Class_student.objects.filter(student=student, batch=clerk.batch).select_related('batch', 'school_class').first()
         cash_fee = Student_received_Fee_Cash.objects.filter(student=student, added_by__batch=clerk.batch)
-        bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=clerk.batch)
-        paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
+        bank_fee = Student_received_Fee_Bank.objects.filter(student=student, added_by__batch=clerk.batch)
+        paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0)
 
         if 'save_fee' in request.POST:
             total_fee = request.POST.get('received_amount')
@@ -316,7 +316,7 @@ def student_fee_detail(request, id):
             credit_debit_category = request.POST.get('credit_debit_category')
             
             # Save cash fee to database (if model exists)
-            Student_recived_Fee_Bank.objects.create(
+            Student_received_Fee_Bank.objects.create(
                 student=student,
                 added_by=clerk,
                 recived_amount=received_amount,
@@ -334,7 +334,7 @@ def student_fee_detail(request, id):
         for cdt in Credit_Debit_category.objects.filter(status=1):
             detail_total_fee = student_fee.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('amount'))['amount__sum'] or 0
             detail_paid_fee = Student_received_Fee_Cash.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-            detail_paid_fee += Student_recived_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            detail_paid_fee += Student_received_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             if detail_total_fee >0:
                 student_fee_detail.append({
                     'category': cdt,
