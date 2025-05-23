@@ -152,10 +152,10 @@ class Credit_Debit_category(models.Model):
     updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_credit_debit_category')
     status = models.IntegerField(default=1)
 
-class Student_recived_Fee_Bank(models.Model):
+class Student_received_Fee_Bank(models.Model):
     credit_debit_category = models.ForeignKey(Credit_Debit_category, on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    recived_amount = models.FloatField(default=0)
+    received_amount = models.FloatField(default=0)
     paid_date = models.DateField(null=True)
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_recived_fee')
     added_date = models.DateTimeField(auto_now_add=True, null=True)
@@ -214,7 +214,7 @@ class student_fee(models.Model):
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_student_fee')
     veryfy_date = models.DateTimeField(null=True, blank=True)
     veryfy_by = models.ForeignKey(Admin_detail, on_delete=models.CASCADE, null=True, related_name='veryfy_by_student_fee')
-     
+
     
 class Student_received_Fee_Cash(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

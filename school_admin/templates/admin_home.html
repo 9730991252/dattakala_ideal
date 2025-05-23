@@ -4,14 +4,14 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
+{% load admin_tag %}
 {% include 'admin_navbar.html' %}
 {% include 'alert.html' %}
 
 
 <div class="" style="display: flex;">
-
-    
     <br>
+    {% expenses_details a.batch %}
     {% include 'school_details_card.html' %}
     <div class="container card_main_box">
     <div class="detail_cards">

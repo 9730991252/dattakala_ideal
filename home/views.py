@@ -47,7 +47,7 @@ def check_banks_available_amount(request, batch):
     banks=[]
     for b in Bank_Account.objects.filter(status=1):               
         avalable_cash = Cash_Transfer_To_Bank.objects.filter(batch=batch, to_bank=b).aggregate(Sum('amount'))['amount__sum'] or 0
-        avalable_cash += Student_recived_Fee_Bank.objects.filter(added_by__batch=batch, account=b).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+        avalable_cash += Student_received_Fee_Bank.objects.filter(added_by__batch=batch, account=b).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
         banks.append({
             'bank_name': b.bank_name,
             'account_number': b.account_number,
@@ -58,6 +58,10 @@ def check_banks_available_amount(request, batch):
 
 
 def index(request):
+    Expenses.objects.all().delete()
+    Student_received_Fee_Cash.objects.all().delete()
+    Student_received_Fee_Bank.objects.all().delete()
+    student_fee.objects.all().delete()
     context = {
         'visitor': check_new_visitor(request),
     }

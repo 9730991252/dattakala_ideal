@@ -1,0 +1,37 @@
+<style>
+    .header{
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ccc;
+        gap: 10px;
+    }
+    .category_box{
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        width: 1000px;
+    }
+    .body{
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+</style>
+  <div class="category_box">
+    <div class="header">
+        <div class="category_name">Name</div>
+        <div class="total">Total</div>
+        <div class="received">Received</div>
+        <div class="pending">Pending</div>
+    </div>
+    {% for c in credit_debit_category %}
+    <div class="body">
+        <div class="category_name">{{ c.name }}</div>
+        <div class="total">{{ c.total_amount }}</div>
+        <div class="received">{{ c.received_amount }}</div>
+        <div class="pending">{{ c.pending_amount }}</div>
+    </div>
+    {% endfor %}
+  </div>

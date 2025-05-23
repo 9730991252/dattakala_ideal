@@ -46,6 +46,7 @@ def admin_home(request):
         banks_available_amount = check_banks_available_amount(request, a.batch)
         clerk_available_amount = check_clerk_available_amount(request, a.batch)
         context={
+            'a':a,
             'total_students':Student.objects.all().count(),
             'male_students':Student.objects.filter(gender='MALE').count(),
             'female_students':Student.objects.filter(gender='FEMALE').count(),
@@ -79,15 +80,15 @@ def admin_view_student_detail(request, id):
         student_img = Student_Image.objects.filter(student=student).first()
         class_info = Class_student.objects.filter(student=student, batch=a.batch).select_related('batch', 'school_class').first()
         cash_fee = Student_received_Fee_Cash.objects.filter(student=student, added_by__batch=a.batch)
-        bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=a.batch)
-        paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
+        bank_fee = Student_received_Fee_Bank.objects.filter(student=student, added_by__batch=a.batch)
+        paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0)
         total_fee = student_fee.objects.filter(student=student, batch=a.batch).aggregate(Sum('amount'))['amount__sum'] or 0
         print('total_fee', total_fee)
         student_fee_detail = []
         for cdt in Credit_Debit_category.objects.filter(status=1):
             detail_total_fee = student_fee.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('amount'))['amount__sum'] or 0
             detail_paid_fee = Student_received_Fee_Cash.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-            detail_paid_fee += Student_recived_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            detail_paid_fee += Student_received_Fee_Bank.objects.filter(credit_debit_category=cdt, student=student).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             if detail_total_fee >0:
                 student_fee_detail.append({
                     'category': cdt,
@@ -153,11 +154,11 @@ def debit(request):
     
 def get_bank_credits(batch_id, bank_id):
     bank_credits = []
-    for sb in Student_recived_Fee_Bank.objects.filter(account_id=bank_id):
+    for sb in Student_received_Fee_Bank.objects.filter(account_id=bank_id):
         bank_credits.append({
             'credit_type':'Student_recived_Fee_Bank',
             'id':sb.id,
-            'recived_amount':sb.recived_amount,
+            'received_amount':sb.received_amount,
             'recived_date':sb.paid_date,
             'admin_verify_status':sb.admin_verify_status,
             'verify_date':sb.verify_date,
@@ -171,7 +172,7 @@ def get_bank_credits(batch_id, bank_id):
         bank_credits.append({
             'credit_type':'Cash_Transfer_To_Bank',
             'id':ctb.id,
-            'recived_amount':ctb.amount,
+            'received_amount':ctb.amount,
             'recived_date':ctb.transfer_date,
             'from_clerk':ctb.from_clerk,
             'from_admin':ctb.from_admin,
@@ -188,7 +189,7 @@ def get_cash_credits(batch_id):
         cash_credits.append({
             'credit_type':'Student_received_Fee_Cash',
             'id':sb.id,
-            'recived_amount':sb.received_amount,
+            'received_amount':sb.received_amount,
             'recived_date':sb.paid_date,
             'admin_verify_status':sb.admin_verify_status, 
             'verify_date':sb.veryfy_date,
@@ -289,7 +290,7 @@ def admin_view_students(request):
 
             
             total_fee_paid = Student_received_Fee_Cash.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-            total_fee_paid += Student_recived_Fee_Bank.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            total_fee_paid += Student_received_Fee_Bank.objects.filter(student_id=i.id, added_by__batch=a.batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             
             reamining_fee = total_fee - total_fee_paid or 0
             

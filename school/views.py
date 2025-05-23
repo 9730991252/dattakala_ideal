@@ -167,8 +167,12 @@ def school_cash_transfer(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']
         clerk = Clerk.objects.filter(mobile=mobile).first()
-        # avalable_cash = check_avalable_cash(request, clerk.batch)
-        avalable_cash = 0
+        ac = check_clerk_available_amount(request, clerk.batch)
+        available_cash = 0
+        for c in ac:
+            if c['clerk'].id == clerk.id:
+                available_cash = c['available_cash']
+                break
         if 'transfer_cash_to_bank' in request.POST:
             transfer_amount = request.POST.get('transfer_amount')
             transfer_date = request.POST.get('transfer_date')
@@ -180,7 +184,7 @@ def school_cash_transfer(request):
             elif not transfer_amount.isdigit() or int(transfer_amount) <= 0:
                 messages.error(request, 'Invalid transfer amount.')
             else:
-                if int(transfer_amount) > int(avalable_cash):
+                if int(transfer_amount) > int(available_cash):
                     messages.error(request, 'You don\'t have enough cash.')
                 else:
                     Cash_Transfer_To_Bank.objects.create(
@@ -199,7 +203,7 @@ def school_cash_transfer(request):
             if not transfer_amount.isdigit() or int(transfer_amount) <= 0:
                 messages.error(request, 'Invalid transfer amount.')
             else:
-                if int(transfer_amount) > int(avalable_cash):
+                if int(transfer_amount) > int(available_cash):
                     messages.error(request, 'You don\'t have enough cash.')
                 else:
                     Cash_Transfer_To_Admin.objects.create(
@@ -220,7 +224,7 @@ def school_cash_transfer(request):
             if not transfer_amount or not transfer_date or not to_bank:
                 messages.error(request, 'All fields are required for cash transfer.')
             else:
-                if int(float(transfer_amount)) > int(avalable_cash):
+                if int(float(transfer_amount)) > int(available_cash):
                     messages.error(request, 'You don\'t have enough cash.')
                 else:
                     Cash_Transfer_To_Bank.objects.filter(id=id).update(
@@ -240,7 +244,7 @@ def school_cash_transfer(request):
             if not transfer_amount or not transfer_date:
                 messages.error(request, 'All fields are required for cash transfer.')
             else:
-                if int(float(transfer_amount)) > int(avalable_cash):
+                if int(float(transfer_amount)) > int(available_cash):
                     messages.error(request, 'You don\'t have enough cash.')
                 else:
                     Cash_Transfer_To_Admin.objects.filter(id=id).update(
@@ -252,7 +256,7 @@ def school_cash_transfer(request):
             return redirect('school_cash_transfer')
         context={
             'clerk':clerk,
-            'avalable_cash':avalable_cash, 
+            'avalable_cash':available_cash, 
             'bank':Bank_Account.objects.filter(status=1),
             'today_date':date.today(),
             'cash_transfer_to_bank':Cash_Transfer_To_Bank.objects.filter(batch=clerk.batch),
@@ -712,6 +716,7 @@ def add_student(request):
         context={
             'clerk':clerk,
             'students': s,
+            'students_t':s.count(),
             'return_name': return_name,
             'return_mobile': return_mobile,
             'return_aadhar_number': return_aadhar_number,
