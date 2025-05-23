@@ -29,14 +29,21 @@ def check_new_visitor(request):
         )
     return web_visitor.objects.all().first().count
 
-def check_avalable_cash(request, batch):
-    avalable_cash = Student_received_Fee_Cash.objects.filter(added_by__batch=batch).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-    avalable_cash -= Cash_Transfer_To_Bank.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
-    avalable_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
-    avalable_cash -= Expenses.objects.filter(batch=batch, type='cash').aggregate(Sum('amount'))['amount__sum'] or 0
-    return avalable_cash
- 
-def check_banks_avalable_amount(request, batch):
+def check_clerk_available_amount(request, batch):
+    clerks = []
+    for c in Clerk.objects.filter(status=1, batch=batch):     
+        available_cash = Student_received_Fee_Cash.objects.filter(added_by=c).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+        available_cash -= Cash_Transfer_To_Bank.objects.filter(batch=batch, from_clerk=c).aggregate(Sum('amount'))['amount__sum'] or 0
+        available_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch, from_clerk=c).aggregate(Sum('amount'))['amount__sum'] or 0
+        available_cash -= Expenses.objects.filter(batch=batch, type='cash', added_by=c).aggregate(Sum('amount'))['amount__sum'] or 0
+        if available_cash > 0:
+            clerks.append({
+                'clerk': c,
+                'available_cash': available_cash
+            })
+    return clerks
+
+def check_banks_available_amount(request, batch):
     banks=[]
     for b in Bank_Account.objects.filter(status=1):               
         avalable_cash = Cash_Transfer_To_Bank.objects.filter(batch=batch, to_bank=b).aggregate(Sum('amount'))['amount__sum'] or 0
