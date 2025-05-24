@@ -57,9 +57,9 @@ def school_admin_student_details(batch_id):
         })
 
     return {
-            'total_students':Student.objects.all().count(),
-            'male_students':Student.objects.filter(gender='MALE').count(),
-            'female_students':Student.objects.filter(gender='FEMALE').count(),
+            'total_students':Class_student.objects.filter(batch_id=batch_id).count(),
+            'male_students':Class_student.objects.filter(batch_id=batch_id, student__gender='MALE').count(),
+            'female_students':Class_student.objects.filter(batch_id=batch_id, student__gender='FEMALE').count(),
             'school_class': school_class,
             'total_teacher':Teacher.objects.all().count(),
             'male_teacher':Teacher.objects.filter(gender='MALE').count(),
