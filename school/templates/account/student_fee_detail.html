@@ -574,7 +574,7 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
             {% for t in bank_fee %}
             <tr>
                 <td>{{ t.paid_date|date:'d-m-y' }}</td>
-                <td>₹.{{t.recived_amount}}  Bank</td>
+                <td>₹.{{t.received_amount}}  Bank</td>
                 <td>{{t.credit_debit_category.category_name}}</td>
                 <td>{{t.utr_number}}</td>
                 <td>{{t.account.bank_name}}, {{t.account.account_number}}</td>

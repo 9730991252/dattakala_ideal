@@ -1,0 +1,160 @@
+<style>
+    .card_main_box{
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .detail_cards{
+        border: 1px solid #bbb;
+        width: 140px;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #ddd;
+        box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;    
+        text-align: center;
+        i{
+            font-size: 30px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            height: fit-content;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        p{
+            margin-bottom: -0px;
+            font-weight: 700;
+        }
+    }
+    .detail_cards1{
+        border: 1px solid #bbb;
+        width: 500px;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #ddd;
+        box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;    
+        text-align: center;
+        i{
+            font-size: 30px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            height: fit-content;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        p{
+            margin-bottom: -0px;
+            font-weight: 700;
+        }
+    }
+    a{
+        text-decoration: none;
+        color: black;
+    }
+</style>
+
+
+<style>
+    .category_box {
+        width: 500px;
+        margin: 20px auto;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .header,
+    .body,
+    .footer {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        align-items: center;
+        padding: 8px 12px;
+    }
+
+    .header {
+        background-color: #f5f5f5;
+        font-weight: bold;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .body {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+    }
+
+    .body:hover {
+        background-color: #f9f9f9;
+    }
+
+    .footer {
+        background-color: #fafafa;
+        font-weight: bold;
+        border-top: 1px solid #ccc;
+    }
+
+    .received {
+        color: green;
+        font-weight: 500;
+    }
+
+    .pending {
+        color: red;
+        font-weight: 500;
+    }
+
+    .category_name,
+    .total,
+    .received,
+    .pending {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<a href="/school_admin/admin_view_students/">
+
+    <div class="category_box" style="height: fit-content;">
+        <div class="header">
+            <div class="category_name">Class Name</div>
+            <div class="">Male</div>
+            <div class="">Female</div>
+            <div class="">Total</div>
+        </div>
+        
+        <div style="height: 200px;overflow-y: scroll;"> 
+            
+            {% for c in school_class %}
+            <div class="body">
+                <div class="category_name">{{ c.class_name }}</div>
+                <div class="">{{ c.male_students }}</div>
+                <div class="">{{ c.female_students }}</div>
+                <div class="">{{ c.total_students }}</div>
+            </div>
+            {% endfor %}
+            
+        </div>
+        <!-- Total Row -->
+        <div class="footer">
+            <div class="category_name">Total</div>
+            <div class="">{{ total_students }}</div>
+            <div class="">{{ male_students }}</div>
+            <div class="">{{ female_students }}</div>
+        </div>
+    </div>
+</a>
+    
+    

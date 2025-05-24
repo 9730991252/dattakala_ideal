@@ -319,7 +319,7 @@ def student_fee_detail(request, id):
             Student_received_Fee_Bank.objects.create(
                 student=student,
                 added_by=clerk,
-                recived_amount=received_amount,
+                received_amount=received_amount,
                 paid_date=pdate,
                 account_id=bank,
                 utr_number=utr_number,

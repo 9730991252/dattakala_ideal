@@ -9,26 +9,39 @@
 {% include 'alert.html' %}
 
 
+
+
 <div class="" style="display: flex;">
     <br>
     {% expenses_details a.batch %}
-    {% include 'school_details_card.html' %}
-    <div class="container card_main_box">
-    <div class="detail_cards">
-        <i class="fas fa-sign-in-alt"></i>
-        <p>Today's Check In</p>
-        <b>{{check_in}}</b>
-    </div>
-    <div class="detail_cards">
-        <i class="fas fa-sign-out-alt"></i>
-        <p>Today's Check Out</p>
-        <b>{{check_out}}</b>
-    </div>
-    </div>
+    {% school_admin_student_details a.batch %}
+    
+    
+    
+    
+</div>
 
+<br>
 
-
-
+<div class="container card_main_box">
+    <a href="/school_admin/admin_view_teacher/" class="detail_cards">
+        <div >
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <p>Teacher {{total_teacher}}</p>
+            <h>Male {{male_teacher}} &nbsp;</h><br>
+            <h>FeMale {{female_teacher}}</h>
+        </div>
+    </a>
+<div class="detail_cards">
+    <i class="fas fa-sign-in-alt"></i>
+    <p>Today's Check In</p>
+    <b>{{check_in}}</b>
+</div>
+<div class="detail_cards">
+    <i class="fas fa-sign-out-alt"></i>
+    <p>Today's Check Out</p>
+    <b>{{check_out}}</b>
+</div>
 </div>
 
 <style>
